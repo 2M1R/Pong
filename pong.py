@@ -42,7 +42,7 @@ def run():
     sp_paddle2 = factory.from_color(WHITE, size=(20, 100))
 
     player1 = Player(world, sp_paddle1, 0, 250)
-    player2 = Player(world, sp_paddle2, 780, 250)
+    player2 = Player(world, sp_paddle2, 1255, 250)
 
     running = True
     while running:
