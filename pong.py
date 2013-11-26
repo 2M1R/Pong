@@ -31,6 +31,19 @@ def run():
     sdl2ext.init()
     window = sdl2ext.Window("Pong Game", size=(1280, 720))
     window.show()
+
+    world = sdl2ext.World()
+
+    spriterenderer = SoftwareRenderer(window)
+    world.add_system(spriterenderer)
+
+    factory = sdl2ext.SpriteFactory(sdl2ext.SOFTWARE)
+    sp_paddle1 = factory.from_color(WHITE, size=(20, 100))
+    sp_paddle2 = factory.from_color(WHITE, size=(20, 100))
+
+    player1 = Player(world, sp_paddle1, 0, 250)
+    player2 = Player(world, sp_paddle2, 780, 250)
+
     running = True
     while running:
         events = sdl2ext.get_events()
@@ -38,7 +51,7 @@ def run():
             if event.type == SDL_QUIT:
                 running = False
                 break
-        window.refresh()
+        world.process()
     return 0
 
 
