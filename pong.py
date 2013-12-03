@@ -126,6 +126,14 @@ def run():
             if event.type == SDL_QUIT:
                 running = False
                 break
+            if event.type == SDL_KEYDOWN:
+                if event.key.keysym.sym == SDLK_UP:
+                    player1.velocity.vy = -3
+                elif event.key.keysym.sym == SDLK_DOWN:
+                    player1.velocity.vy = 3
+            elif event.type == SDL_KEYUP:
+                if event.key.keysym.sym in (SDLK_UP, SDLK_DOWN):
+                    player1.velocity.vy = 0
         SDL_Delay(10)
         world.process()
     return 0
