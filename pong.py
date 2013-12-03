@@ -52,6 +52,33 @@ class MovementSystem(sdl2ext.Applicator):
                 sprite.y = self.maxy - sheight
 
 
+class CollisionSystem(sdl2ext.Applicator):
+    def __init__(self, minx, miny, maxx, maxy):
+        super(CollisionSystem, self).__init__()
+        self.componenttypes = (Velocity, sdl2ext.Sprite)
+        self.ball = None
+        self.minx = minx
+        self.miny = miny
+        self.maxx = maxx
+        self.maxy = maxy
+
+    def _overlap(self, item):
+        pos, sprite = item[0], item[1]
+        if sprite == self.ball.sprite:
+            return False
+
+        left, top, right, bottom = sprite.area
+        bleft, btop, bright, bbottom = self.ball.sprite.area
+
+        return bleft < right and bright > left and \
+               btop < bottom and bbottom > top
+
+    def process(self, world, componentsets):
+        collitems = [comp for comp in componentsets if self._overlap(comp)]
+        if len(collitems) != 0:
+            self.ball.velocity.vx = -self.ball.velocity.vx
+
+
 class Velocity(object):
     def __init__(self):
         super(Velocity, self).__init__()
@@ -73,9 +100,12 @@ def run():
 
     world = sdl2ext.World()
 
-    movement = MovementSystem(0, 0, 800, 600)
+    collision = CollisionSystem(0, 0, 1280, 720)
+    movement = MovementSystem(0, 0, 1280, 720)
     spriterenderer = SoftwareRenderer(window)
+
     world.add_system(movement)
+    world.add_system(collision)
     world.add_system(spriterenderer)
 
     factory = sdl2ext.SpriteFactory(sdl2ext.SOFTWARE)
@@ -85,7 +115,8 @@ def run():
 
     player1 = Player(world, sp_paddle1, 0, 250)
     player2 = Player(world, sp_paddle2, 1255, 250)
-    ball = Ball(world, sp_ball, 390, 290)
+    ball = Ball(world, sp_ball, 300, 290)
+    collision.ball = ball
     ball.velocity.vx = -3
 
     running = True
@@ -95,6 +126,7 @@ def run():
             if event.type == SDL_QUIT:
                 running = False
                 break
+        SDL_Delay(10)
         world.process()
     return 0
 
